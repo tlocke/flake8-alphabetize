@@ -1,0 +1,69 @@
+= Flake8 Alphabetize
+:tox: preamble
+
+Alphabetize is a https://flake8.pycqa.org/en/latest/[Flake8] plugin for checking the
+order of `import` statements and the `__all__` list. It is designed to work well with
+the https://black.readthedocs.io/en/stable/index.html[black] formatting tool, in that
+black never alters the Abstract Syntax Tree (AST), while Alphabetize is *only*
+interested in the AST, and so the two tools never conflict. Alphabetise is released
+under the https://unlicense.org[Unlicense]. It is tested on Python 3.6+.
+
+image::https://github.com/tlocke/flake8-alphabetize/workflows/flake8-alphabetise/badge.svg[Build Status]
+
+
+== Installation
+
+* Create a virtual environment: `python3 -m venv venv`
+* Activate it: `source venv/bin/activate`
+* Install: `pip install flake8-alphabetize`
+
+
+== Usage
+
+As you use Flake8 in the normal way, Alphabetize will report errors using the following
+codes:
+
+.Error Codes
+|===
+| Code | Error Type
+
+| AZ100
+| Import statements are in the wrong order
+
+| AZ101
+| The names in the \'from\' import are in the wrong order
+
+| AZ102
+| Missing line break between import groups
+
+| AZ103
+| Unexpected line break between imports.
+|===
+
+
+== Rules
+
+Here are the ordering rules that Alphabetize follows:
+
+* Only comments and docstrings before import statements.
+
+
+== Doing A Release Of Alphabetize
+
+Run `tox` to make sure all tests pass, then update the release notes, then do:
+
+....
+git tag -a x.y.z -m "version x.y.z"
+rm -r build
+rm -r dist
+python setup.py sdist bdist_wheel
+for f in dist/*; do gpg --detach-sign -a $f; done
+twine upload dist/*
+....
+
+
+== Release Notes
+
+=== Version 0.0.0, 2021-04-09
+
+* Initial release. Doesn't do much at this stage.
