@@ -5,8 +5,10 @@ import versioneer
 from os import path
 
 
-long_description = """A Flake8 style checker for alphabetizing import and __all__.",
-Please see the [documentation](https://github.com/tlocke/flake8-alphabetize)"""
+long_description = """
+A Flake8 style checker for alphabetizing import and \_\_all\_\_. Please see the
+documentation](https://github.com/tlocke/flake8-alphabetize)
+"""
 
 setuptools.setup(
     name="flake8_alphabetize",

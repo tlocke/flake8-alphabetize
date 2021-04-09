@@ -64,6 +64,11 @@ twine upload dist/*
 
 == Release Notes
 
+=== Version 0.0.2, 2021-04-09
+
+* Partially support `from` `import` statements.
+
+
 === Version 0.0.1, 2021-04-09
 
 * Now partially supports `import` statements.

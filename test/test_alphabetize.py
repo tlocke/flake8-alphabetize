@@ -14,6 +14,11 @@ import pytest
 import os""",
             [],
         ],
+        [
+            """import versioneer
+from os import path""",
+            [],
+        ],
     ],
 )
 def test_find_errors(pystr, errors):

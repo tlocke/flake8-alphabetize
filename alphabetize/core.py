@@ -18,10 +18,6 @@ class AzImport:
     def __init__(self, ast_node):
         self.node = ast_node
         self.error = None
-        """
-        >>> libraries = stdlib_list("2.7")
-        >>> libraries[:10]
-        """
 
         if isinstance(ast_node, ast.Import):
             self.is_import = True
@@ -32,9 +28,11 @@ class AzImport:
 
             self.module_name = names[0].name
 
-        elif isinstance(ast_node, ast.Import):
+        elif isinstance(ast_node, ast.ImportFrom):
             self.is_import = False
             self.module_name = ast_node.module
+
+        self.in_stdlib = in_stdlib(self.module_name)
 
     def __eq__(self, other):
         return self.node == other.node
