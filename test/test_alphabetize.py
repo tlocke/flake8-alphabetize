@@ -9,6 +9,11 @@ import pytest
     "pystr,errors",
     [
         ["", []],
+        [
+            """import decimal
+import os""",
+            [],
+        ],
     ],
 )
 def test_find_errors(pystr, errors):

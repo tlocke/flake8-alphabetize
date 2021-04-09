@@ -1,4 +1,6 @@
 import ast
+from functools import total_ordering
+from stdlib_list import in_stdlib
 
 
 class Alphabetize:
@@ -11,44 +13,77 @@ class Alphabetize:
         return iter(self.errors)
 
 
+@total_ordering
+class AzImport:
+    def __init__(self, ast_node):
+        self.node = ast_node
+        self.error = None
+        """
+        >>> libraries = stdlib_list("2.7")
+        >>> libraries[:10]
+        """
+
+        if isinstance(ast_node, ast.Import):
+            self.is_import = True
+            names = ast_node.names
+            if len(names) != 1:
+                self.error = "pep8"
+                return
+
+            self.module_name = names[0].name
+
+        elif isinstance(ast_node, ast.Import):
+            self.is_import = False
+            self.module_name = ast_node.module
+
+    def __eq__(self, other):
+        return self.node == other.node
+
+    def __lt__(self, other):
+        self.module_name < other.module_name
+
+    def __str__(self):
+        if self.is_import:
+            return f"import {self.module_name}"
+        else:
+            names = [
+                n.name + ("" if n.asname is None else f" as {n.asname}")
+                for n in node.names
+            ]
+            return f"from {node.module} import {', '.join(names)}"
+
+
 class ImportVisitor(ast.NodeVisitor):
     def __init__(self):
-        self.imp_nodes = []
+        self.imports = []
 
-    def visit_Import(self, imp_node):
-        self.imp_nodes.append(imp_node)
+    def visit_Import(self, node):
+        self.imports.append(AzImport(node))
 
-    def visit_ImportFrom(self, imp_node):
-        self.imp_nodes.append(imp_node)
+    def visit_ImportFrom(self, node):
+        self.imports.append(AzImport(node))
 
 
 def _find_errors(tree):
     visitor = ImportVisitor()
     visitor.visit(tree)
-    imp_nodes = visitor.imp_nodes
+    imports = visitor.imports
     errors = []
 
-    if len(imp_nodes) < 2:
+    if len(imports) < 2:
         return errors
 
-    p = imp_nodes[0]
-    for n in imp_nodes[1:]:
-        if n.module < p.module:
+    p = imports[0]
+    for n in imports[1:]:
+        if n < p:
             errors.append(
                 (
                     n.lineno,
                     n.col_offset,
-                    f"AZ000 Import statements are in the wrong order. 'from "
-                    f"{_imp_from_to_str(n)}' should be before '{_imp_from_to_str(p)}'",
+                    f"AZ000 Import statements are in the wrong order. '{p}' should "
+                    f"be before '{n}'",
                     Alphabetize,
                 )
             )
         p = n
     return errors
-
-
-def _imp_from_to_str(node):
-    names_str = ", ".join(
-        n.name + ("" if n.asname is None else f" as {n.asname}") for n in node.names
-    )
-    return f"from {node.module} import {names_str}"

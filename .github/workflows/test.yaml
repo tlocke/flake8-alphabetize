@@ -25,4 +25,5 @@ jobs:
         black --check .
     - name: Test with pytest
       run: |
+        python setup.py install
         python -m pytest -x -v test
