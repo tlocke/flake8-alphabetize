@@ -1,6 +1,11 @@
 import ast
 from functools import total_ordering
+
 from stdlib_list import in_stdlib
+
+
+class AlphabetizeException(Exception):
+    pass
 
 
 class Alphabetize:
@@ -11,6 +16,10 @@ class Alphabetize:
 
     def __iter__(self):
         return iter(self.errors)
+
+
+def _make_error(node, code, message):
+    return (node.lineno, node.col_offset, f"AZ{code} {message}", Alphabetize)
 
 
 @total_ordering
@@ -31,6 +40,19 @@ class AzImport:
         elif isinstance(ast_node, ast.ImportFrom):
             self.is_import = False
             self.module_name = ast_node.module
+            ast_names = ast_node.names
+            names = [n.name for n in ast_names]
+            expected_names = sorted(names)
+            if names != expected_names:
+                self.error = _make_error(
+                    self.node,
+                    200,
+                    f"Imported names are in the wrong order. Should be "
+                    f"{', '.join(expected_names)}",
+                )
+
+        else:
+            raise AlphabetizeException(f"Node type {type(ast_node)} not recognized")
 
         self.in_stdlib = in_stdlib(self.module_name)
 
@@ -38,7 +60,7 @@ class AzImport:
         return self.node == other.node
 
     def __lt__(self, other):
-        self.module_name < other.module_name
+        return self.module_name < other.module_name
 
     def __str__(self):
         if self.is_import:
@@ -46,26 +68,17 @@ class AzImport:
         else:
             names = [
                 n.name + ("" if n.asname is None else f" as {n.asname}")
-                for n in node.names
+                for n in self.node.names
             ]
-            return f"from {node.module} import {', '.join(names)}"
+            return f"from {self.node.module} import {', '.join(names)}"
 
 
-class ImportVisitor(ast.NodeVisitor):
-    def __init__(self):
-        self.imports = []
-
-    def visit_Import(self, node):
-        self.imports.append(AzImport(node))
-
-    def visit_ImportFrom(self, node):
-        self.imports.append(AzImport(node))
+def _find_imports(tree):
+    return [n for n in ast.walk(tree) if isinstance(n, (ast.Import, ast.ImportFrom))]
 
 
 def _find_errors(tree):
-    visitor = ImportVisitor()
-    visitor.visit(tree)
-    imports = visitor.imports
+    imports = [AzImport(imp) for imp in _find_imports(tree)]
     errors = []
 
     if len(imports) < 2:
@@ -75,12 +88,11 @@ def _find_errors(tree):
     for n in imports[1:]:
         if n < p:
             errors.append(
-                (
-                    n.lineno,
-                    n.col_offset,
-                    f"AZ000 Import statements are in the wrong order. '{p}' should "
-                    f"be before '{n}'",
-                    Alphabetize,
+                _make_error(
+                    n.node,
+                    "000",
+                    f"Import statements are in the wrong order. '{n}' should be "
+                    f"before '{p}'",
                 )
             )
         p = n

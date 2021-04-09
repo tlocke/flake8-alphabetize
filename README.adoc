@@ -30,14 +30,9 @@ codes:
 | AZ100
 | Import statements are in the wrong order
 
-| AZ101
+| AZ200
 | The names in the \'from\' import are in the wrong order
 
-| AZ102
-| Missing line break between import groups
-
-| AZ103
-| Unexpected line break between imports.
 |===
 
 
@@ -63,6 +58,11 @@ twine upload dist/*
 
 
 == Release Notes
+
+=== Version 0.0.3, 2021-04-10
+
+* Check the order within `from` `import` statements.
+
 
 === Version 0.0.2, 2021-04-09
 
