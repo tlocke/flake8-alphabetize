@@ -15,6 +15,30 @@ if True:
 
 
 @pytest.mark.parametrize(
+    "pystr,error",
+    [
+        [
+            "from pg8000.converters import BIGINT_ARRAY, BIGINT",
+            (
+                1,
+                0,
+                "AZ200 Imported names are in the wrong order. Should be BIGINT, "
+                "BIGINT_ARRAY",
+                Alphabetize,
+            ),
+        ],
+    ],
+)
+def test_AzImport_init(pystr, error):
+    node = parse(pystr)
+    imports = _find_imports(node)
+
+    az = AzImport(imports[0])
+
+    assert az.error == error
+
+
+@pytest.mark.parametrize(
     "pystr_a,pystr_b,is_lt",
     [
         ["from pg8000.converters import BIGINT, BIGINT_ARRAY", "import pytz", True],
@@ -43,6 +67,11 @@ if True:
             "from pg8000.converters import pg_interval_in",
             True,
         ],
+        [
+            "from __future__ import print_function",
+            "import decimal",
+            True,
+        ],
     ],
 )
 def test_AzImport_lt(pystr_a, pystr_b, is_lt):
@@ -55,6 +84,16 @@ def test_AzImport_lt(pystr_a, pystr_b, is_lt):
     az_b = AzImport(imports_b[0])
 
     assert (az_a < az_b) == is_lt
+
+
+def test_AzImport_str():
+    pystr = "from .version import version"
+    node = parse(pystr)
+    imports = _find_imports(node)
+
+    az = AzImport(imports[0])
+
+    assert str(az) == pystr
 
 
 @pytest.mark.parametrize(
@@ -99,37 +138,3 @@ def test_find_errors(pystr, errors):
     actual_errors = _find_errors(tree)
 
     assert actual_errors == errors
-
-
-@pytest.mark.parametrize(
-    "pystr,error",
-    [
-        [
-            "from pg8000.converters import BIGINT_ARRAY, BIGINT",
-            (
-                1,
-                0,
-                "AZ200 Imported names are in the wrong order. Should be BIGINT, "
-                "BIGINT_ARRAY",
-                Alphabetize,
-            ),
-        ],
-    ],
-)
-def test_AzImport_init(pystr, error):
-    node = parse(pystr)
-    imports = _find_imports(node)
-
-    az = AzImport(imports[0])
-
-    assert az.error == error
-
-
-def test_AzImport_str():
-    pystr = "from .version import version"
-    node = parse(pystr)
-    imports = _find_imports(node)
-
-    az = AzImport(imports[0])
-
-    assert str(az) == pystr

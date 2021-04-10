@@ -31,7 +31,7 @@ codes:
 | Import statements are in the wrong order
 
 | AZ200
-| The names in the \'from\' import are in the wrong order
+| The names in the 'from' import are in the wrong order
 
 |===
 
@@ -40,12 +40,14 @@ codes:
 
 Here are the ordering rules that Alphabetize follows:
 
-* Imports from the standard library come first, followed by third party imports,
+* The special case `pass:macros[from __future__]` import comes first.
+
+* Imports from the standard library come next, followed by third party imports,
   followed by application imports.
 
 * Relative imports are assumed to be application imports.
 
-* Alphabetize only looks at imports at the module level, any import within the code
+* Alphabetize only looks at imports at the module level, any imports within the code
   are ignored.
 
 
@@ -64,6 +66,11 @@ twine upload dist/*
 
 
 == Release Notes
+
+=== Version 0.0.7, 2021-04-10
+
+* Import of `\_\_future\_\_`. Should always be first.
+
 
 === Version 0.0.6, 2021-04-10
 

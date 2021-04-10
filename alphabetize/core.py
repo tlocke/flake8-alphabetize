@@ -24,9 +24,10 @@ def _make_error(node, code, message):
 
 
 class GroupEnum(IntEnum):
-    STDLIB = 1
-    THIRD_PARTY = 2
-    APPLICATION = 3
+    FUTURE = 1
+    STDLIB = 2
+    THIRD_PARTY = 3
+    APPLICATION = 4
 
 
 class NodeTypeEnum(IntEnum):
@@ -40,6 +41,7 @@ class AzImport:
         self.node = ast_node
         self.error = None
         self.level = None
+        self.group = None
 
         if isinstance(ast_node, ast.Import):
             self.node_type = NodeTypeEnum.IMPORT
@@ -51,8 +53,9 @@ class AzImport:
             self.level = 0
 
         elif isinstance(ast_node, ast.ImportFrom):
-            self.node_type = NodeTypeEnum.IMPORT_FROM
             self.module_name = ast_node.module
+            self.node_type = NodeTypeEnum.IMPORT_FROM
+
             ast_names = ast_node.names
             names = [n.name for n in ast_names]
             expected_names = sorted(names)
@@ -68,7 +71,9 @@ class AzImport:
         else:
             raise AlphabetizeException(f"Node type {type(ast_node)} not recognized")
 
-        if in_stdlib(self.module_name):
+        if self.module_name == "__future__":
+            self.group = GroupEnum.FUTURE
+        elif in_stdlib(self.module_name):
             self.group = GroupEnum.STDLIB
         elif self.level > 0:
             self.group = GroupEnum.APPLICATION
