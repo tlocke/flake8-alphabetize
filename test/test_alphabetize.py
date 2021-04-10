@@ -38,6 +38,11 @@ if True:
             "from collections import OrderedDict",
             True,
         ],
+        [
+            "import pg8000.dbapi",
+            "from pg8000.converters import pg_interval_in",
+            True,
+        ],
     ],
 )
 def test_AzImport_lt(pystr_a, pystr_b, is_lt):

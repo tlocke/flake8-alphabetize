@@ -78,7 +78,10 @@ class AzImport:
         if self.group == GroupEnum.STDLIB:
             self.sorter = self.group, self.node_type, self.module_name
         else:
-            self.sorter = self.group, self.module_name, self.node_type
+            m = self.module_name
+            first_dot = m.find(".")
+            top_name = m if first_dot == -1 else m[:first_dot]
+            self.sorter = self.group, top_name, self.node_type, m
 
     def __eq__(self, other):
         return self.node == other.node
