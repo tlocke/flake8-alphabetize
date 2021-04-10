@@ -1,4 +1,5 @@
 import ast
+from enum import IntEnum
 from functools import total_ordering
 
 from stdlib_list import in_stdlib
@@ -22,6 +23,17 @@ def _make_error(node, code, message):
     return (node.lineno, node.col_offset, f"AZ{code} {message}", Alphabetize)
 
 
+class GroupEnum(IntEnum):
+    STDLIB = 1
+    THIRD_PARTY = 2
+    APPLICATION = 3
+
+
+class NodeTypeEnum(IntEnum):
+    IMPORT = 1
+    IMPORT_FROM = 2
+
+
 @total_ordering
 class AzImport:
     def __init__(self, ast_node):
@@ -30,7 +42,7 @@ class AzImport:
         self.level = None
 
         if isinstance(ast_node, ast.Import):
-            self.is_import = True
+            self.node_type = NodeTypeEnum.IMPORT
             names = ast_node.names
             if len(names) != 1:
                 return
@@ -39,7 +51,7 @@ class AzImport:
             self.level = 0
 
         elif isinstance(ast_node, ast.ImportFrom):
-            self.is_import = False
+            self.node_type = NodeTypeEnum.IMPORT_FROM
             self.module_name = ast_node.module
             ast_names = ast_node.names
             names = [n.name for n in ast_names]
@@ -56,24 +68,28 @@ class AzImport:
         else:
             raise AlphabetizeException(f"Node type {type(ast_node)} not recognized")
 
-        self.in_stdlib = in_stdlib(self.module_name)
+        if in_stdlib(self.module_name):
+            self.group = GroupEnum.STDLIB
+        elif self.level > 0:
+            self.group = GroupEnum.APPLICATION
+        else:
+            self.group = GroupEnum.THIRD_PARTY
+
+        if self.group == GroupEnum.STDLIB:
+            self.sorter = self.group, self.node_type, self.module_name
+        else:
+            self.sorter = self.group, self.module_name, self.node_type
 
     def __eq__(self, other):
         return self.node == other.node
 
     def __lt__(self, other):
-        if self.in_stdlib == other.in_stdlib:
-            if self.level == other.level:
-                return self.module_name < other.module_name
-            else:
-                return self.level < other.level
-        else:
-            return self.in_stdlib > other.in_stdlib
+        return self.sorter < other.sorter
 
     def __str__(self):
-        if self.is_import:
+        if self.node_type == NodeTypeEnum.IMPORT:
             return f"import {self.module_name}"
-        else:
+        elif self.node_type == NodeTypeEnum.IMPORT_FROM:
             level = self.node.level
             level_str = "" if level == 0 else "." * level
             names = [
@@ -81,6 +97,10 @@ class AzImport:
                 for n in self.node.names
             ]
             return f"from {level_str}{self.node.module} import {', '.join(names)}"
+        else:
+            raise AlphabetizeException(
+                f"The node type {self.node_type} is not recognized."
+            )
 
 
 IMPORT_TYPES = ast.Import, ast.ImportFrom

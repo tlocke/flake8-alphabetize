@@ -15,6 +15,44 @@ if True:
 
 
 @pytest.mark.parametrize(
+    "pystr_a,pystr_b,is_lt",
+    [
+        ["from pg8000.converters import BIGINT, BIGINT_ARRAY", "import pytz", True],
+        [
+            "from pg8000.native import Connection",
+            "from ._version import get_versions",
+            True,
+        ],
+        [
+            "from ._version import get_versions",
+            "from pg8000.native import Connection",
+            False,
+        ],
+        [
+            "import uuid",
+            "import scramp",
+            True,
+        ],
+        [
+            "import time",
+            "from collections import OrderedDict",
+            True,
+        ],
+    ],
+)
+def test_AzImport_lt(pystr_a, pystr_b, is_lt):
+    imports_a = _find_imports(parse(pystr_a))
+    assert len(imports_a) == 1
+    az_a = AzImport(imports_a[0])
+
+    imports_b = _find_imports(parse(pystr_b))
+    assert len(imports_b) == 1
+    az_b = AzImport(imports_b[0])
+
+    assert (az_a < az_b) == is_lt
+
+
+@pytest.mark.parametrize(
     "pystr,errors",
     [
         ["", []],
@@ -56,39 +94,6 @@ def test_find_errors(pystr, errors):
     actual_errors = _find_errors(tree)
 
     assert actual_errors == errors
-
-
-@pytest.mark.parametrize(
-    "pystr_a,pystr_b,is_lt",
-    [
-        ["from pg8000.converters import BIGINT, BIGINT_ARRAY", "import pytz", True],
-        [
-            "from pg8000.native import Connection",
-            "from ._version import get_versions",
-            True,
-        ],
-        [
-            "from ._version import get_versions",
-            "from pg8000.native import Connection",
-            False,
-        ],
-        [
-            "import uuid",
-            "import scramp",
-            True,
-        ],
-    ],
-)
-def test_AzImport_lt(pystr_a, pystr_b, is_lt):
-    imports_a = _find_imports(parse(pystr_a))
-    assert len(imports_a) == 1
-    az_a = AzImport(imports_a[0])
-
-    imports_b = _find_imports(parse(pystr_b))
-    assert len(imports_b) == 1
-    az_b = AzImport(imports_b[0])
-
-    assert (az_a < az_b) == is_lt
 
 
 @pytest.mark.parametrize(
