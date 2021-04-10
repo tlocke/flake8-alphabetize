@@ -2,11 +2,9 @@ import setuptools
 
 import versioneer
 
-from os import path
-
 
 long_description = """
-A Flake8 style checker for alphabetizing import and \_\_all\_\_. Please see the
+A Flake8 style checker for alphabetizing import and \\_\\_all\\_\\_. Please see the
 documentation](https://github.com/tlocke/flake8-alphabetize)
 """
 
@@ -30,7 +28,7 @@ setuptools.setup(
     ],
     entry_points={
         "flake8.extension": [
-            "ALP = alphabetize:Alphabetize",
+            "AZ = alphabetize:Alphabetize",
         ],
     },
     classifiers=[

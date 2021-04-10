@@ -40,7 +40,13 @@ codes:
 
 Here are the ordering rules that Alphabetize follows:
 
-* Only comments and docstrings before import statements.
+* Imports from the standard library come first, followed by third party imports,
+  followed by application imports.
+
+* Relative imports are assumed to be application imports.
+
+* Alphabetize only looks at imports at the module level, any import within the code
+  are ignored.
 
 
 == Doing A Release Of Alphabetize
@@ -58,6 +64,11 @@ twine upload dist/*
 
 
 == Release Notes
+
+=== Version 0.0.4, 2021-04-10
+
+* Make entry point AZ instead of ALP.
+
 
 === Version 0.0.3, 2021-04-10
 
