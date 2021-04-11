@@ -2,11 +2,17 @@
 :tox: preamble
 
 Alphabetize is a https://flake8.pycqa.org/en/latest/[Flake8] plugin for checking the
-order of `import` statements and the `__all__` list. It is designed to work well with
-the https://black.readthedocs.io/en/stable/index.html[Black] formatting tool, in that
-Black never alters the Abstract Syntax Tree (AST), while Alphabetize is *only*
-interested in the AST, and so the two tools never conflict. Alphabetise is released
-under the https://unlicense.org[Unlicense]. It is tested on Python 3.6+.
+order of `import` statements and the `pass:macros[__all__]` list. It is designed to work
+well with the https://black.readthedocs.io/en/stable/index.html[Black] formatting tool,
+in that Black never alters the
+https://en.wikipedia.org/wiki/Abstract_syntax_tree[Abstract Syntax Tree] (AST), while
+Alphabetize is *only* interested in the AST, and so the two tools never conflict. In
+the spirit of Black, Alphabetize is an 'uncompromising import style checker' in that
+the style can't be configured, there's just one style (see below for the rules).
+
+
+Alphabetise is released under the https://unlicense.org[Unlicense]. It is tested on
+Python 3.6+.
 
 image::https://github.com/tlocke/flake8-alphabetize/actions/workflows/test.yaml/badge.svg[Build Status]
 
