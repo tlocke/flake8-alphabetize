@@ -121,6 +121,12 @@ twine upload dist/*
 
 == Release Notes
 
+=== Version 0.0.8, 2021-04-11
+
+* Application imports can now be identified by setting the `application-package-names`
+  configuration option.
+
+
 === Version 0.0.7, 2021-04-10
 
 * Import of `\_\_future\_\_`. Should always be first.
