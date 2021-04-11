@@ -3,8 +3,8 @@
 
 Alphabetize is a https://flake8.pycqa.org/en/latest/[Flake8] plugin for checking the
 order of `import` statements and the `__all__` list. It is designed to work well with
-the https://black.readthedocs.io/en/stable/index.html[black] formatting tool, in that
-black never alters the Abstract Syntax Tree (AST), while Alphabetize is *only*
+the https://black.readthedocs.io/en/stable/index.html[Black] formatting tool, in that
+Black never alters the Abstract Syntax Tree (AST), while Alphabetize is *only*
 interested in the AST, and so the two tools never conflict. Alphabetise is released
 under the https://unlicense.org[Unlicense]. It is tested on Python 3.6+.
 
@@ -74,7 +74,7 @@ codes:
 |===
 
 
-Alphabetize follows the 'black' formatter's uncompromising approach and so there's only
+Alphabetize follows the Black formatter's uncompromising approach and so there's only
 one configuration option which is `application-names`. This is a comma-separated list
 of top-level, package names that are to be treated as application imports, eg. 'myapp'.
 Since Alphabetize is a Flake8 plugin, this configuration option is set using
