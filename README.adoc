@@ -8,7 +8,7 @@ Black never alters the Abstract Syntax Tree (AST), while Alphabetize is *only*
 interested in the AST, and so the two tools never conflict. Alphabetise is released
 under the https://unlicense.org[Unlicense]. It is tested on Python 3.6+.
 
-image::https://github.com/tlocke/flake8-alphabetize/workflows/flake8-alphabetise/badge.svg[Build Status]
+image::https://github.com/tlocke/flake8-alphabetize/actions/workflows/test.yaml/badge.svg[Build Status]
 
 
 == Installation
