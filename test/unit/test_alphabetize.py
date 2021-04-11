@@ -39,59 +39,73 @@ def test_AzImport_init(pystr, error):
 
 
 @pytest.mark.parametrize(
-    "pystr_a,pystr_b,is_lt",
+    "app_names,pystr_a,pystr_b,is_lt",
     [
-        ["from pg8000.converters import BIGINT, BIGINT_ARRAY", "import pytz", True],
+        [[], "from pg8000.converters import BIGINT, BIGINT_ARRAY", "import pytz", True],
         [
+            [],
             "from pg8000.native import Connection",
             "from ._version import get_versions",
             True,
         ],
         [
+            [],
             "from ._version import get_versions",
             "from pg8000.native import Connection",
             False,
         ],
         [
+            [],
             "import uuid",
             "import scramp",
             True,
         ],
         [
+            [],
             "import time",
             "from collections import OrderedDict",
             True,
         ],
         [
+            [],
             "import pg8000.dbapi",
             "from pg8000.converters import pg_interval_in",
             True,
         ],
         [
+            [],
             "from __future__ import print_function",
             "import decimal",
             True,
         ],
         [
+            [],
             "from pg8000.converters import ARRAY",
             "from pg8000.converters import BIGINT",
             False,
         ],
         [
+            [],
             "from pg8000.converters import BIGINT",
             "from pg8000.converters import ARRAY",
             False,
         ],
+        [
+            ["pg8000"],
+            "import scramp",
+            "import pg8000",
+            True,
+        ],
     ],
 )
-def test_AzImport_lt(pystr_a, pystr_b, is_lt):
+def test_AzImport_lt(app_names, pystr_a, pystr_b, is_lt):
     imports_a = _find_imports(parse(pystr_a))
     assert len(imports_a) == 1
-    az_a = AzImport([], imports_a[0])
+    az_a = AzImport(app_names, imports_a[0])
 
     imports_b = _find_imports(parse(pystr_b))
     assert len(imports_b) == 1
-    az_b = AzImport([], imports_b[0])
+    az_b = AzImport(app_names, imports_b[0])
 
     assert (az_a < az_b) == is_lt
 
@@ -107,15 +121,17 @@ def test_AzImport_str():
 
 
 @pytest.mark.parametrize(
-    "pystr,errors",
+    "app_names,pystr,errors",
     [
-        ["", []],
+        [[], "", []],
         [
+            [],
             """import decimal
 import os""",
             [],
         ],
         [
+            [],
             """import versioneer
 from os import path""",
             [
@@ -125,10 +141,11 @@ from os import path""",
                     "AZ100 Import statements are in the wrong order. "
                     "'from os import path' should be before 'import versioneer'",
                     Alphabetize,
-                )
+                ),
             ],
         ],
         [
+            [],
             "from datetime import timedelta, date",
             [
                 (
@@ -141,6 +158,7 @@ from os import path""",
             ],
         ],
         [
+            [],
             """from pg8000 import BIGINT
 from pg8000 import ARRAY""",
             [
@@ -153,11 +171,17 @@ from pg8000 import ARRAY""",
                 )
             ],
         ],
+        [
+            ["pg8000"],
+            """import scramp
+from pg8000 import ARRAY""",
+            [],
+        ],
     ],
 )
-def test_find_errors(pystr, errors):
+def test_find_errors(app_names, pystr, errors):
     tree = parse(pystr)
 
-    actual_errors = _find_errors([], tree)
+    actual_errors = _find_errors(app_names, tree)
 
     assert actual_errors == errors

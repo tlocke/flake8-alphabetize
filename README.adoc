@@ -50,7 +50,7 @@ from myapp import myfunc
 print(uuid.UUID4(), myfunc())
 ----
 
-by running the command `flake8 --application-package-names myapp` we won't get any
+by running the command `flake8 --application-names myapp` we won't get any
 errors.
 
 
@@ -75,10 +75,10 @@ codes:
 
 
 Alphabetize follows the 'black' formatter's uncompromising approach and so there's only
-one configuration option which is `application-package-names`. This is a
-comma-separated list of package names that are to be treated as application imports,
-eg. 'myapp'. Since Alphabetize is a Flake8 plugin, this configuration option is set
-using https://flake8.pycqa.org/en/latest/user/configuration.html[Flake8 configuration].
+one configuration option which is `application-names`. This is a comma-separated list
+of top-level, package names that are to be treated as application imports, eg. 'myapp'.
+Since Alphabetize is a Flake8 plugin, this configuration option is set using
+https://flake8.pycqa.org/en/latest/user/configuration.html[Flake8 configuration].
 
 
 == Rules
@@ -120,6 +120,12 @@ twine upload dist/*
 
 
 == Release Notes
+
+=== Version 0.0.9, 2021-04-11
+
+* There's a clash of option names, so now application imports can now be identified by
+  setting the `application-names` configuration option.
+
 
 === Version 0.0.8, 2021-04-11
 

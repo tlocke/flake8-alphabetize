@@ -22,9 +22,9 @@ class Alphabetize:
     @staticmethod
     def add_options(option_manager):
         option_manager.add_option(
-            "--application-package-names",
+            "--application-names",
             type="string",
-            metavar="IMPORT_NAMES",
+            metavar="APPLICATION_NAMES",
             default="",
             parse_from_config=True,
             help="Comma-separated list of package names. If an import is for a "
@@ -34,7 +34,8 @@ class Alphabetize:
 
     @classmethod
     def parse_options(cls, options):
-        cls.app_names = options.application_package_names
+        names = options.application_names
+        cls.app_names = [] if (names is None or names == "") else [names]
 
 
 def _make_error(node, code, message):
@@ -96,11 +97,11 @@ class AzImport:
         elif level > 0:
             group = GroupEnum.APPLICATION
         else:
+            group = GroupEnum.THIRD_PARTY
             for name in app_names:
                 if name == self.module_name or self.module_name.startswith(f"{name}."):
                     group = GroupEnum.APPLICATION
                     break
-            group = GroupEnum.THIRD_PARTY
 
         if group == GroupEnum.STDLIB:
             self.sorter = group, self.node_type, self.module_name
