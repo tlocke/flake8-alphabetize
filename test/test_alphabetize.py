@@ -207,6 +207,13 @@ import struct
                 )
             ],
         ],
+        [
+            ["scramp"],
+            """import scramp
+from ._version import vers
+""",
+            [],
+        ],
     ],
 )
 def test_find_errors(app_names, pystr, errors):

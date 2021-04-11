@@ -95,9 +95,14 @@ Here are the ordering rules that Alphabetize follows:
 * The standard library group has `import` statements first (in alphabetical order),
   followed by `from import` statements (in alphabetical order).
 
-* For both the third party and application groups, each group is further grouped by
-  library name. Then each library subgroup has `import` statements first (in
-  alphabetical order), followed by `from import` statements (in alphabetical order).
+* The third party group is further grouped by library name. Then each library subgroup
+  has `import` statements first (in alphabetical order), followed by `from import`
+  statements (in alphabetical order).
+
+* The application group is further grouped by import level, with absolute imports first
+  and then relative imports of increasing level. Within each level, the imports should
+  be ordered by library name. Then each library subgroup has `import` statements first
+  (in alphabetical order), followed by `from import` statements (in alphabetical order).
 
 * `from import` statements for the same library must be combined.
 
@@ -120,6 +125,11 @@ twine upload dist/*
 
 
 == Release Notes
+
+=== Version 0.0.11, 2021-04-11
+
+* Order application imports by import level, absolute imports at the top.
+
 
 === Version 0.0.10, 2021-04-11
 
