@@ -33,7 +33,7 @@ def test_AzImport_init(pystr, error):
     node = parse(pystr)
     imports = _find_imports(node)
 
-    az = AzImport(imports[0])
+    az = AzImport([], imports[0])
 
     assert az.error == error
 
@@ -72,16 +72,26 @@ def test_AzImport_init(pystr, error):
             "import decimal",
             True,
         ],
+        [
+            "from pg8000.converters import ARRAY",
+            "from pg8000.converters import BIGINT",
+            False,
+        ],
+        [
+            "from pg8000.converters import BIGINT",
+            "from pg8000.converters import ARRAY",
+            False,
+        ],
     ],
 )
 def test_AzImport_lt(pystr_a, pystr_b, is_lt):
     imports_a = _find_imports(parse(pystr_a))
     assert len(imports_a) == 1
-    az_a = AzImport(imports_a[0])
+    az_a = AzImport([], imports_a[0])
 
     imports_b = _find_imports(parse(pystr_b))
     assert len(imports_b) == 1
-    az_b = AzImport(imports_b[0])
+    az_b = AzImport([], imports_b[0])
 
     assert (az_a < az_b) == is_lt
 
@@ -91,7 +101,7 @@ def test_AzImport_str():
     node = parse(pystr)
     imports = _find_imports(node)
 
-    az = AzImport(imports[0])
+    az = AzImport([], imports[0])
 
     assert str(az) == pystr
 
@@ -112,7 +122,7 @@ from os import path""",
                 (
                     2,
                     0,
-                    "AZ000 Import statements are in the wrong order. "
+                    "AZ100 Import statements are in the wrong order. "
                     "'from os import path' should be before 'import versioneer'",
                     Alphabetize,
                 )
@@ -130,11 +140,24 @@ from os import path""",
                 )
             ],
         ],
+        [
+            """from pg8000 import BIGINT
+from pg8000 import ARRAY""",
+            [
+                (
+                    2,
+                    0,
+                    "AZ300 Import statements should be combined. 'from pg8000 import "
+                    "BIGINT' should be combined with 'from pg8000 import ARRAY'",
+                    Alphabetize,
+                )
+            ],
+        ],
     ],
 )
 def test_find_errors(pystr, errors):
     tree = parse(pystr)
 
-    actual_errors = _find_errors(tree)
+    actual_errors = _find_errors([], tree)
 
     assert actual_errors == errors

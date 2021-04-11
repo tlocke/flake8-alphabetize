@@ -18,6 +18,42 @@ image::https://github.com/tlocke/flake8-alphabetize/workflows/flake8-alphabetise
 * Install: `pip install flake8-alphabetize`
 
 
+== Examples
+
+Say we have a Python file:
+
+.myfile.py
+[source,python]
+----
+from datetime import time, date
+
+print(time(9, 39), date(2021, 4, 11))
+----
+
+by running the command `flake8` we'll get:
+
+----
+myfile.py:1:1: AZ200 Imported names are in the wrong order. Should be date, time
+----
+
+
+We can tell Alphabetize what the package name is, and then it'll know that its imports
+should be in group at the bottom of the imports. Here's an example:
+
+.myfile.py
+[source,python]
+----
+import uuid
+
+from myapp import myfunc
+
+print(uuid.UUID4(), myfunc())
+----
+
+by running the command `flake8 --application-package-names myapp` we won't get any
+errors.
+
+
 == Usage
 
 As you use Flake8 in the normal way, Alphabetize will report errors using the following
@@ -31,9 +67,18 @@ codes:
 | Import statements are in the wrong order
 
 | AZ200
-| The names in the 'from' import are in the wrong order
+| The names in the `import from` are in the wrong order
 
+| AZ300
+| Two `import from` statements must be combined.
 |===
+
+
+Alphabetize follows the 'black' formatter's uncompromising approach and so there's only
+one configuration option which is `application-package-names`. This is a
+comma-separated list of package names that are to be treated as application imports,
+eg. 'myapp'. Since Alphabetize is a Flake8 plugin, this configuration option is set
+using https://flake8.pycqa.org/en/latest/user/configuration.html[Flake8 configuration].
 
 
 == Rules
@@ -46,6 +91,15 @@ Here are the ordering rules that Alphabetize follows:
   followed by application imports.
 
 * Relative imports are assumed to be application imports.
+
+* The standard library group has `import` statements first (in alphabetical order),
+  followed by `from import` statements (in alphabetical order).
+
+* For both the third party and application groups, each group is further grouped by
+  library name. Then each library subgroup has `import` statements first (in
+  alphabetical order), followed by `from import` statements (in alphabetical order).
+
+* `from import` statements for the same library must be combined.
 
 * Alphabetize only looks at imports at the module level, any imports within the code
   are ignored.

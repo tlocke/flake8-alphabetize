@@ -13,10 +13,28 @@ class Alphabetize:
     name = "alphabetize"
 
     def __init__(self, tree):
-        self.errors = _find_errors(tree)
+        self.tree = tree
 
     def __iter__(self):
-        return iter(self.errors)
+        errors = _find_errors(Alphabetize.app_names, self.tree)
+        return iter(errors)
+
+    @staticmethod
+    def add_options(option_manager):
+        option_manager.add_option(
+            "--application-package-names",
+            type="string",
+            metavar="IMPORT_NAMES",
+            default="",
+            parse_from_config=True,
+            help="Comma-separated list of package names. If an import is for a "
+            "package in this list, it'll be in the application group of imports. "
+            "Eg. 'myapp'.",
+        )
+
+    @classmethod
+    def parse_options(cls, options):
+        cls.app_names = options.application_package_names
 
 
 def _make_error(node, code, message):
@@ -37,11 +55,11 @@ class NodeTypeEnum(IntEnum):
 
 @total_ordering
 class AzImport:
-    def __init__(self, ast_node):
+    def __init__(self, app_names, ast_node):
         self.node = ast_node
         self.error = None
-        self.level = None
-        self.group = None
+        level = None
+        group = None
 
         if isinstance(ast_node, ast.Import):
             self.node_type = NodeTypeEnum.IMPORT
@@ -50,7 +68,7 @@ class AzImport:
                 return
 
             self.module_name = names[0].name
-            self.level = 0
+            level = 0
 
         elif isinstance(ast_node, ast.ImportFrom):
             self.module_name = ast_node.module
@@ -66,30 +84,34 @@ class AzImport:
                     f"Imported names are in the wrong order. Should be "
                     f"{', '.join(expected_names)}",
                 )
-            self.level = ast_node.level
+            level = ast_node.level
 
         else:
             raise AlphabetizeException(f"Node type {type(ast_node)} not recognized")
 
         if self.module_name == "__future__":
-            self.group = GroupEnum.FUTURE
+            group = GroupEnum.FUTURE
         elif in_stdlib(self.module_name):
-            self.group = GroupEnum.STDLIB
-        elif self.level > 0:
-            self.group = GroupEnum.APPLICATION
+            group = GroupEnum.STDLIB
+        elif level > 0:
+            group = GroupEnum.APPLICATION
         else:
-            self.group = GroupEnum.THIRD_PARTY
+            for name in app_names:
+                if name == self.module_name or self.module_name.startswith(f"{name}."):
+                    group = GroupEnum.APPLICATION
+                    break
+            group = GroupEnum.THIRD_PARTY
 
-        if self.group == GroupEnum.STDLIB:
-            self.sorter = self.group, self.node_type, self.module_name
+        if group == GroupEnum.STDLIB:
+            self.sorter = group, self.node_type, self.module_name
         else:
             m = self.module_name
             first_dot = m.find(".")
             top_name = m if first_dot == -1 else m[:first_dot]
-            self.sorter = self.group, top_name, self.node_type, m
+            self.sorter = group, top_name, self.node_type, m
 
     def __eq__(self, other):
-        return self.node == other.node
+        return self.sorter == other.sorter
 
     def __lt__(self, other):
         return self.sorter < other.sorter
@@ -125,8 +147,8 @@ def _find_imports(tree):
             return []
 
 
-def _find_errors(tree):
-    imports = [AzImport(imp) for imp in _find_imports(tree)]
+def _find_errors(app_names, tree):
+    imports = [AzImport(app_names, imp) for imp in _find_imports(tree)]
     errors = []
 
     len_imports = len(imports)
@@ -145,14 +167,22 @@ def _find_errors(tree):
         if n.error is not None:
             errors.append(n.error)
 
-        if n < p:
+        if n == p:
             errors.append(
                 _make_error(
                     n.node,
-                    "000",
+                    "300",
+                    f"Import statements should be combined. '{p}' should be "
+                    f"combined with '{n}'",
+                )
+            )
+        elif n < p:
+            errors.append(
+                _make_error(
+                    n.node,
+                    "100",
                     f"Import statements are in the wrong order. '{n}' should be "
                     f"before '{p}'",
                 )
             )
-        p = n
     return errors
