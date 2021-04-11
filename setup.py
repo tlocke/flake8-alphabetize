@@ -9,7 +9,7 @@ documentation](https://github.com/tlocke/flake8-alphabetize)
 """
 
 setuptools.setup(
-    name="flake8_alphabetize",
+    name="flake8-alphabetize",
     license="Unlicense",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
@@ -18,9 +18,9 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     author="Tony Locke",
     author_email="tlocke@tlocke.org.uk",
-    url="https://github.com/tlocke/flake8_alphabetize",
+    url="https://github.com/tlocke/flake8-alphabetize",
     packages=[
-        "alphabetize",
+        "flake8_alphabetize",
     ],
     install_requires=[
         "flake8 > 3.0.0",
@@ -28,7 +28,7 @@ setuptools.setup(
     ],
     entry_points={
         "flake8.extension": [
-            "AZ = alphabetize:Alphabetize",
+            "AZ = flake8_alphabetize:Alphabetize",
         ],
     },
     classifiers=[

@@ -59,11 +59,9 @@ def test_cmd_failure(py_version, case, app_names, error):
 
     with pytest.raises(CalledProcessError) as excinfo:
         if py_version == (3, 6):
-            result = run(args, check=True, shell=True, encoding="utf8")
+            run(args, check=True, shell=True, encoding="utf8")
         else:
-            result = run(
-                args, capture_output=True, check=True, shell=True, encoding="utf8"
-            )
+            run(args, capture_output=True, check=True, shell=True, encoding="utf8")
 
     if py_version != (3, 6):
         e = excinfo.value

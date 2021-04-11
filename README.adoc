@@ -121,6 +121,11 @@ twine upload dist/*
 
 == Release Notes
 
+=== Version 0.0.10, 2021-04-11
+
+* Fix bug where potentially fails with > 2 imports.
+
+
 === Version 0.0.9, 2021-04-11
 
 * There's a clash of option names, so now application imports can now be identified by

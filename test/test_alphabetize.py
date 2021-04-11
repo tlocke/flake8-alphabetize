@@ -1,7 +1,7 @@
 from ast import parse
 
-from alphabetize import Alphabetize
-from alphabetize.core import AzImport, _find_errors, _find_imports
+from flake8_alphabetize import Alphabetize
+from flake8_alphabetize.core import AzImport, _find_errors, _find_imports
 
 import pytest
 
@@ -176,6 +176,36 @@ from pg8000 import ARRAY""",
             """import scramp
 from pg8000 import ARRAY""",
             [],
+        ],
+        [
+            ["pg8000"],
+            """from pg8000 import ARRAY
+import scramp""",
+            [
+                (
+                    2,
+                    0,
+                    "AZ100 Import statements are in the wrong order. 'import scramp' "
+                    "should be before 'from pg8000 import ARRAY'",
+                    Alphabetize,
+                )
+            ],
+        ],
+        [
+            [],
+            """import socket
+import sys
+import struct
+""",
+            [
+                (
+                    3,
+                    0,
+                    "AZ100 Import statements are in the wrong order. 'import struct' "
+                    "should be before 'import sys'",
+                    Alphabetize,
+                )
+            ],
         ],
     ],
 )

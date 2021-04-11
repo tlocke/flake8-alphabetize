@@ -1,4 +1,4 @@
-from alphabetize.core import Alphabetize
+from flake8_alphabetize.core import Alphabetize
 
 from ._version import get_versions
 

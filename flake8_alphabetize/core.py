@@ -186,4 +186,7 @@ def _find_errors(app_names, tree):
                     f"before '{p}'",
                 )
             )
+
+        p = n
+
     return errors
