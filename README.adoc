@@ -6,7 +6,7 @@ order of `import` statements and the `pass:macros[__all__]` list. It is designed
 well with the https://black.readthedocs.io/en/stable/index.html[Black] formatting tool,
 in that Black never alters the
 https://en.wikipedia.org/wiki/Abstract_syntax_tree[Abstract Syntax Tree] (AST), while
-Alphabetize is *only* interested in the AST, and so the two tools never conflict. In
+Alphabetize is _only_ interested in the AST, and so the two tools never conflict. In
 the spirit of Black, Alphabetize is an 'uncompromising import style checker' in that
 the style can't be configured, there's just one style (see below for the rules).
 
