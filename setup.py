@@ -4,7 +4,7 @@ import versioneer
 
 
 long_description = """
-A Flake8 style checker for alphabetizing import and \\_\\_all\\_\\_. Please see the
+A Flake8 style checker for alphabetizing import and \\_\\_all\\_\\_. Please see [the
 documentation](https://github.com/tlocke/flake8-alphabetize)
 """
 
