@@ -1,17 +1,43 @@
-from ast import parse
+from ast import List, parse
 
 from flake8_alphabetize import Alphabetize
-from flake8_alphabetize.core import AzImport, _find_errors, _find_imports
+from flake8_alphabetize.core import (
+    AzImport,
+    _find_dunder_all_error,
+    _find_errors,
+    _find_nodes,
+)
 
 import pytest
 
 
-def test_find_imports():
-    pystr = """
+@pytest.mark.parametrize(
+    "pystr,import_node_types,has_list_node",
+    [
+        [
+            """
 if True:
     import scramp
-"""
-    assert _find_imports(parse(pystr)) == []
+""",
+            [],
+            False,
+        ],
+        [
+            "__all__ = []",
+            [],
+            True,
+        ],
+    ],
+)
+def test_find_nodes(pystr, import_node_types, has_list_node):
+    import_nodes, list_node = _find_nodes(parse(pystr))
+
+    assert [type(n) for n in import_nodes] == import_node_types
+
+    if has_list_node:
+        assert type(list_node) == List
+    else:
+        assert list_node is None
 
 
 @pytest.mark.parametrize(
@@ -31,9 +57,7 @@ if True:
 )
 def test_AzImport_init(pystr, error):
     node = parse(pystr)
-    imports = _find_imports(node)
-
-    az = AzImport([], imports[0])
+    az = AzImport([], node.body[0])
 
     assert az.error == error
 
@@ -99,13 +123,11 @@ def test_AzImport_init(pystr, error):
     ],
 )
 def test_AzImport_lt(app_names, pystr_a, pystr_b, is_lt):
-    imports_a = _find_imports(parse(pystr_a))
-    assert len(imports_a) == 1
-    az_a = AzImport(app_names, imports_a[0])
+    node_a = parse(pystr_a)
+    az_a = AzImport(app_names, node_a.body[0])
 
-    imports_b = _find_imports(parse(pystr_b))
-    assert len(imports_b) == 1
-    az_b = AzImport(app_names, imports_b[0])
+    node_b = parse(pystr_b)
+    az_b = AzImport(app_names, node_b.body[0])
 
     assert (az_a < az_b) == is_lt
 
@@ -113,11 +135,48 @@ def test_AzImport_lt(app_names, pystr_a, pystr_b, is_lt):
 def test_AzImport_str():
     pystr = "from .version import version"
     node = parse(pystr)
-    imports = _find_imports(node)
 
-    az = AzImport([], imports[0])
+    az = AzImport([], node.body[0])
 
     assert str(az) == pystr
+
+
+@pytest.mark.parametrize(
+    "pystr,error",
+    [
+        [
+            "[]",
+            None,
+        ],
+        [
+            "()",
+            None,
+        ],
+        [
+            "[ScramServer]",
+            None,
+        ],
+        [
+            "('ScramClient',)",
+            None,
+        ],
+        [
+            "['ScramServer', 'ScramClient']",
+            (
+                1,
+                0,
+                "AZ400 The names in the __all__ are in the wrong order. The order "
+                "should be ScramClient, ScramServer",
+                Alphabetize,
+            ),
+        ],
+    ],
+)
+def test_find_dunder_all_error(pystr, error):
+    node = parse(pystr)
+    sequence_node = node.body[-1].value
+    actual_error = _find_dunder_all_error(sequence_node)
+    assert actual_error == error
 
 
 @pytest.mark.parametrize(
@@ -211,6 +270,13 @@ import struct
             ["scramp"],
             """import scramp
 from ._version import vers
+""",
+            [],
+        ],
+        [  # We can't check __all__ if the elements aren't literal strings
+            [],
+            """from scramp.core import ScramClient, ScramServer
+__all__ = [ScramServer, ScramClient]
 """,
             [],
         ],

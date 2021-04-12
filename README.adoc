@@ -77,6 +77,9 @@ codes:
 
 | AZ300
 | Two `import from` statements must be combined.
+
+| AZ400
+| The names in the `pass:macros[__all__]` are in the wrong order
 |===
 
 
@@ -87,7 +90,7 @@ Since Alphabetize is a Flake8 plugin, this configuration option is set using
 https://flake8.pycqa.org/en/latest/user/configuration.html[Flake8 configuration].
 
 
-== Rules
+== Rules Of Import Ordering
 
 Here are the ordering rules that Alphabetize follows:
 
@@ -131,6 +134,11 @@ twine upload dist/*
 
 
 == Release Notes
+
+=== Version 0.0.12, 2021-04-12
+
+* Check the order of the elements of `pass:macros[__all__]`.
+
 
 === Version 0.0.11, 2021-04-11
 

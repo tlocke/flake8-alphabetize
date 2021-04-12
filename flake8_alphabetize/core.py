@@ -1,4 +1,4 @@
-import ast
+from ast import Assign, Constant, Import, ImportFrom, List, Module, Name, Str
 from enum import IntEnum
 from functools import total_ordering
 
@@ -62,7 +62,7 @@ class AzImport:
         level = None
         group = None
 
-        if isinstance(ast_node, ast.Import):
+        if isinstance(ast_node, Import):
             self.node_type = NodeTypeEnum.IMPORT
             names = ast_node.names
             if len(names) != 1:
@@ -71,7 +71,7 @@ class AzImport:
             self.module_name = names[0].name
             level = 0
 
-        elif isinstance(ast_node, ast.ImportFrom):
+        elif isinstance(ast_node, ImportFrom):
             self.module_name = ast_node.module
             self.node_type = NodeTypeEnum.IMPORT_FROM
 
@@ -134,23 +134,65 @@ class AzImport:
             )
 
 
-IMPORT_TYPES = ast.Import, ast.ImportFrom
+IMPORT_TYPES = Import, ImportFrom
 
 
-def _find_imports(tree):
-    if isinstance(tree, ast.Module):
+def _find_nodes(tree):
+    import_nodes = []
+    list_node = None
+
+    if isinstance(tree, Module):
         body = tree.body
-        if isinstance(body, IMPORT_TYPES):
-            return [body]
-        elif isinstance(body, list):
-            return [n for n in body if isinstance(n, IMPORT_TYPES)]
-        else:
-            return []
+
+        for n in body:
+
+            if isinstance(n, IMPORT_TYPES):
+                import_nodes.append(n)
+
+            elif isinstance(n, Assign):
+
+                for t in n.targets:
+
+                    if isinstance(t, Name) and t.id == "__all__":
+                        value = n.value
+
+                        if isinstance(value, List):
+                            list_node = value
+
+    return import_nodes, list_node
+
+
+def _find_dunder_all_error(node):
+    if node is not None:
+        actual_list = []
+        for el in node.elts:
+            if isinstance(el, Constant):
+                actual_list.append(el.value)
+            elif isinstance(el, Str):
+                actual_list.append(el.s)
+            else:
+                # Can't handle anything that isn't a string literal
+                return
+
+        expected_list = sorted(actual_list)
+        if expected_list != actual_list:
+            return _make_error(
+                node,
+                "400",
+                f"The names in the __all__ are in the wrong order. The order should "
+                f"be {', '.join(expected_list)}",
+            )
 
 
 def _find_errors(app_names, tree):
-    imports = [AzImport(app_names, imp) for imp in _find_imports(tree)]
+    import_nodes, list_node = _find_nodes(tree)
+    imports = [AzImport(app_names, imp) for imp in import_nodes]
+
     errors = []
+
+    dunder_all_error = _find_dunder_all_error(list_node)
+    if dunder_all_error is not None:
+        errors.append(dunder_all_error)
 
     len_imports = len(imports)
     if len_imports == 0:
