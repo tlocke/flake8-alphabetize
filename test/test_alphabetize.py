@@ -53,6 +53,10 @@ def test_find_nodes(pystr, import_node_types, has_list_node):
                 Alphabetize,
             ),
         ],
+        [
+            "from . import logging",
+            None,
+        ],
     ],
 )
 def test_AzImport_init(pystr, error):
@@ -118,6 +122,12 @@ def test_AzImport_init(pystr, error):
             ["pg8000"],
             "import scramp",
             "import pg8000",
+            True,
+        ],
+        [
+            [],
+            "from . import scramp",
+            "from .version import ver",
             True,
         ],
     ],

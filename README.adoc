@@ -135,6 +135,11 @@ twine upload dist/*
 
 == Release Notes
 
+=== Version 0.0.13, 2021-04-20
+
+* Fix bug where it fails on a relative import such as `from . import logging`.
+
+
 === Version 0.0.12, 2021-04-12
 
 * Check the order of the elements of `pass:macros[__all__]`.

@@ -107,8 +107,11 @@ class AzImport:
             self.sorter = group, self.node_type, self.module_name
         else:
             m = self.module_name
-            dot_idx = m.find(".")
-            top_name = m if dot_idx == -1 else m[:dot_idx]
+            if m is None:
+                top_name = ""
+            else:
+                dot_idx = m.find(".")
+                top_name = m if dot_idx == -1 else m[:dot_idx]
             self.sorter = group, level, top_name, self.node_type, m
 
     def __eq__(self, other):
