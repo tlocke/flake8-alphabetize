@@ -135,6 +135,12 @@ twine upload dist/*
 
 == Release Notes
 
+=== Version 0.0.14, 2021-04-20
+
+* Fix bug where `from . import logging` appears in message as
+  `from .None import logging`.
+
+
 === Version 0.0.13, 2021-04-20
 
 * Fix bug where it fails on a relative import such as `from . import logging`.

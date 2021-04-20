@@ -142,8 +142,14 @@ def test_AzImport_lt(app_names, pystr_a, pystr_b, is_lt):
     assert (az_a < az_b) == is_lt
 
 
-def test_AzImport_str():
-    pystr = "from .version import version"
+@pytest.mark.parametrize(
+    "pystr",
+    [
+        "from .version import version",
+        "from . import version",
+    ],
+)
+def test_AzImport_str(pystr):
     node = parse(pystr)
 
     az = AzImport([], node.body[0])

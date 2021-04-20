@@ -72,7 +72,8 @@ class AzImport:
             level = 0
 
         elif isinstance(ast_node, ImportFrom):
-            self.module_name = ast_node.module
+            module = ast_node.module
+            self.module_name = "" if module is None else module
             self.node_type = NodeTypeEnum.IMPORT_FROM
 
             ast_names = ast_node.names
@@ -107,11 +108,8 @@ class AzImport:
             self.sorter = group, self.node_type, self.module_name
         else:
             m = self.module_name
-            if m is None:
-                top_name = ""
-            else:
-                dot_idx = m.find(".")
-                top_name = m if dot_idx == -1 else m[:dot_idx]
+            dot_idx = m.find(".")
+            top_name = m if dot_idx == -1 else m[:dot_idx]
             self.sorter = group, level, top_name, self.node_type, m
 
     def __eq__(self, other):
@@ -130,7 +128,7 @@ class AzImport:
                 n.name + ("" if n.asname is None else f" as {n.asname}")
                 for n in self.node.names
             ]
-            return f"from {level_str}{self.node.module} import {', '.join(names)}"
+            return f"from {level_str}{self.module_name} import {', '.join(names)}"
         else:
             raise AlphabetizeException(
                 f"The node type {self.node_type} is not recognized."
