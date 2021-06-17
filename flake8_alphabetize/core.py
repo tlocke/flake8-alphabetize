@@ -35,7 +35,7 @@ class Alphabetize:
     @classmethod
     def parse_options(cls, options):
         names = options.application_names
-        cls.app_names = [] if (names is None or names == "") else [names]
+        cls.app_names = [] if (names is None or names == "") else names.split(",")
 
 
 def _make_error(node, code, message):

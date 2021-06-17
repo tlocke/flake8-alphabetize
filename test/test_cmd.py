@@ -45,6 +45,12 @@ def test_cmd_success(py_version, case, app_names):
             "test/cmd/case_app_name.py:3:1: AZ100 Import statements are in the wrong "
             "order. 'import scramp' should be before 'import pg8000'\n",
         ],
+        [
+            "app_name",
+            ["nm3434", "pg8000", "qq9000"],
+            "test/cmd/case_app_name.py:3:1: AZ100 Import statements are in the wrong "
+            "order. 'import scramp' should be before 'import pg8000'\n",
+        ],
     ],
 )
 def test_cmd_failure(py_version, case, app_names, error):
