@@ -135,6 +135,12 @@ twine upload dist/*
 
 == Release Notes
 
+=== Version 0.0.15, 2021-06-17
+
+* Fix bug where the `--application-names` command line option failed with a
+  comma-separated list.
+
+
 === Version 0.0.14, 2021-04-20
 
 * Fix bug where `from . import logging` appears in message as
