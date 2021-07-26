@@ -135,6 +135,13 @@ twine upload dist/*
 
 == Release Notes
 
+=== Version 0.0.16, 2021-07-26
+
+* Don't perform any import order checks if there are multiple imports on a line, as
+  this will be reported by Flake8. Once the Flake8 error has been fixed, checks can
+  continue.
+
+
 === Version 0.0.15, 2021-06-17
 
 * Fix bug where the `--application-names` command line option failed with a
