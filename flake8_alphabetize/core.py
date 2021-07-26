@@ -65,8 +65,6 @@ class AzImport:
         if isinstance(ast_node, Import):
             self.node_type = NodeTypeEnum.IMPORT
             names = ast_node.names
-            if len(names) != 1:
-                return
 
             self.module_name = names[0].name
             level = 0
@@ -187,13 +185,18 @@ def _find_dunder_all_error(node):
 
 def _find_errors(app_names, tree):
     import_nodes, list_node = _find_nodes(tree)
-    imports = [AzImport(app_names, imp) for imp in import_nodes]
-
     errors = []
 
     dunder_all_error = _find_dunder_all_error(list_node)
     if dunder_all_error is not None:
         errors.append(dunder_all_error)
+
+    imports = []
+    for imp in import_nodes:
+        if isinstance(imp, Import) and len(imp.names) > 1:
+            return errors
+        else:
+            imports.append(AzImport(app_names, imp))
 
     len_imports = len(imports)
     if len_imports == 0:

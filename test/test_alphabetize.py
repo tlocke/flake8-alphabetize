@@ -296,6 +296,12 @@ __all__ = [ScramServer, ScramClient]
 """,
             [],
         ],
+        [  # Wait for Flake8 fixes to be made first
+            [],
+            """import time
+import datetime, scramp""",
+            [],
+        ],
     ],
 )
 def test_find_errors(app_names, pystr, errors):
