@@ -182,6 +182,14 @@ def test_AzImport_str(pystr):
             None,
         ],
         [
+            "['ScramClient', 'ScramServer']",
+            None,
+        ],
+        [
+            "('ScramClient', 'ScramServer')",
+            None,
+        ],
+        [
             "['ScramServer', 'ScramClient']",
             (
                 1,
