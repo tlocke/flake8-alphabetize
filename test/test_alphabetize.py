@@ -163,32 +163,26 @@ def test_AzImport_str(pystr):
 
 
 @pytest.mark.parametrize(
+    "pystr",
+    [
+        "[]",
+        "()",
+        "[ScramServer]",
+        "('ScramClient',)",
+        "['ScramClient', 'ScramServer']",
+        "('ScramClient', 'ScramServer')",
+    ],
+)
+def test_find_dunder_all_ok(pystr):
+    node = parse(pystr)
+    sequence_node = node.body[-1].value
+
+    assert _find_dunder_all_error(sequence_node) is None
+
+
+@pytest.mark.parametrize(
     "pystr,error",
     [
-        [
-            "[]",
-            None,
-        ],
-        [
-            "()",
-            None,
-        ],
-        [
-            "[ScramServer]",
-            None,
-        ],
-        [
-            "('ScramClient',)",
-            None,
-        ],
-        [
-            "['ScramClient', 'ScramServer']",
-            None,
-        ],
-        [
-            "('ScramClient', 'ScramServer')",
-            None,
-        ],
         [
             "['ScramServer', 'ScramClient']",
             (
@@ -214,8 +208,8 @@ def test_AzImport_str(pystr):
 def test_find_dunder_all_error(pystr, error):
     node = parse(pystr)
     sequence_node = node.body[-1].value
-    actual_error = _find_dunder_all_error(sequence_node)
-    assert actual_error == error
+
+    assert _find_dunder_all_error(sequence_node) == error
 
 
 @pytest.mark.parametrize(
