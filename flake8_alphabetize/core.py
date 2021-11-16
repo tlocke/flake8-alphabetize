@@ -1,4 +1,4 @@
-from ast import Assign, Constant, Import, ImportFrom, List, Module, Name, Str
+from ast import Assign, Constant, Import, ImportFrom, List, Module, Name, Str, Tuple
 from enum import IntEnum
 from functools import total_ordering
 
@@ -155,7 +155,7 @@ def _find_nodes(tree):
                     if isinstance(t, Name) and t.id == "__all__":
                         value = n.value
 
-                        if isinstance(value, List):
+                        if isinstance(value, (List, Tuple)):
                             list_node = value
 
     return import_nodes, list_node

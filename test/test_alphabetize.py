@@ -1,4 +1,4 @@
-from ast import List, parse
+from ast import List, Tuple, parse
 
 from flake8_alphabetize import Alphabetize
 from flake8_alphabetize.core import (
@@ -12,7 +12,7 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    "pystr,import_node_types,has_list_node",
+    "pystr,import_node_types,expected_type",
     [
         [
             """
@@ -20,24 +20,29 @@ if True:
     import scramp
 """,
             [],
-            False,
+            None,
         ],
         [
             "__all__ = []",
             [],
-            True,
+            List,
+        ],
+        [
+            "__all__ = ()",
+            [],
+            Tuple,
         ],
     ],
 )
-def test_find_nodes(pystr, import_node_types, has_list_node):
+def test_find_nodes(pystr, import_node_types, expected_type):
     import_nodes, list_node = _find_nodes(parse(pystr))
 
     assert [type(n) for n in import_nodes] == import_node_types
 
-    if has_list_node:
-        assert type(list_node) == List
-    else:
+    if expected_type is None:
         assert list_node is None
+    else:
+        assert type(list_node) == expected_type
 
 
 @pytest.mark.parametrize(
@@ -178,6 +183,16 @@ def test_AzImport_str(pystr):
         ],
         [
             "['ScramServer', 'ScramClient']",
+            (
+                1,
+                0,
+                "AZ400 The names in the __all__ are in the wrong order. The order "
+                "should be ScramClient, ScramServer",
+                Alphabetize,
+            ),
+        ],
+        [
+            "('ScramServer', 'ScramClient')",
             (
                 1,
                 0,
