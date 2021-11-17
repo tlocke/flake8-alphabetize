@@ -138,7 +138,7 @@ twine upload dist/*
 
 === Version 0.0.17, 2021-11-17
 
-* Handle the case of an `__all__` being a `tuple`.
+* Handle the case of an `pass:macros[__all__]` being a `tuple`.
 
 
 === Version 0.0.16, 2021-07-26
