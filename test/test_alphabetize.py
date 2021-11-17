@@ -185,31 +185,26 @@ def test_find_dunder_all_ok(pystr):
     [
         [
             "['ScramServer', 'ScramClient']",
-            (
-                1,
-                0,
-                "AZ400 The names in the __all__ are in the wrong order. The order "
-                "should be ScramClient, ScramServer",
-                Alphabetize,
-            ),
+            "AZ400 The names in the __all__ are in the wrong order. The order should "
+            "be ScramClient, ScramServer",
         ],
         [
             "('ScramServer', 'ScramClient')",
-            (
-                1,
-                0,
-                "AZ400 The names in the __all__ are in the wrong order. The order "
-                "should be ScramClient, ScramServer",
-                Alphabetize,
-            ),
+            "AZ400 The names in the __all__ are in the wrong order. The order should "
+            "be ScramClient, ScramServer",
         ],
     ],
 )
-def test_find_dunder_all_error(pystr, error):
+def test_find_dunder_all_error(pystr, error, py_version):
     node = parse(pystr)
     sequence_node = node.body[-1].value
+    if isinstance(sequence_node, Tuple):
+        col_offset = 1 if py_version < (3, 8) else 0
+    else:
+        col_offset = 0
+    expected = (1, col_offset, error, Alphabetize)
 
-    assert _find_dunder_all_error(sequence_node) == error
+    assert _find_dunder_all_error(sequence_node) == expected
 
 
 @pytest.mark.parametrize(

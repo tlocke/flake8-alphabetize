@@ -1,3 +1,4 @@
+import sys
 from ast import Assign, Constant, Import, ImportFrom, List, Module, Name, Str, Tuple
 from enum import IntEnum
 from functools import total_ordering
@@ -54,6 +55,13 @@ class NodeTypeEnum(IntEnum):
     IMPORT_FROM = 2
 
 
+def _is_in_stdlib(name):
+    if hasattr(sys, "stdlib_module_names"):
+        return name in sys.stdlib_module_names
+    else:
+        return in_stdlib(name)
+
+
 @total_ordering
 class AzImport:
     def __init__(self, app_names, ast_node):
@@ -91,7 +99,7 @@ class AzImport:
 
         if self.module_name == "__future__":
             group = GroupEnum.FUTURE
-        elif in_stdlib(self.module_name):
+        elif _is_in_stdlib(self.module_name):
             group = GroupEnum.STDLIB
         elif level > 0:
             group = GroupEnum.APPLICATION

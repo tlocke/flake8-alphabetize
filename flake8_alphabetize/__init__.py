@@ -7,4 +7,4 @@ del get_versions
 
 Alphabetize.version = __version__
 
-__all__ = [__version__, Alphabetize]
+__all__ = ["Alphabetize", "__version__"]
