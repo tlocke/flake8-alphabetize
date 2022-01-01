@@ -64,9 +64,10 @@ def test_find_nodes(pystr, import_node_types, expected_type):
         ],
     ],
 )
-def test_AzImport_init(pystr, error):
+@pytest.mark.parametrize("ignore_case", [True, False])
+def test_AzImport_init(pystr, error, ignore_case):
     node = parse(pystr)
-    az = AzImport([], node.body[0])
+    az = AzImport([], ignore_case, node.body[0])
 
     assert az.error == error
 
@@ -137,12 +138,13 @@ def test_AzImport_init(pystr, error):
         ],
     ],
 )
-def test_AzImport_lt(app_names, pystr_a, pystr_b, is_lt):
+@pytest.mark.parametrize("ignore_case", [True, False])
+def test_AzImport_lt(app_names, pystr_a, pystr_b, is_lt, ignore_case):
     node_a = parse(pystr_a)
-    az_a = AzImport(app_names, node_a.body[0])
+    az_a = AzImport(app_names, ignore_case, node_a.body[0])
 
     node_b = parse(pystr_b)
-    az_b = AzImport(app_names, node_b.body[0])
+    az_b = AzImport(app_names, ignore_case, node_b.body[0])
 
     assert (az_a < az_b) == is_lt
 
@@ -154,10 +156,11 @@ def test_AzImport_lt(app_names, pystr_a, pystr_b, is_lt):
         "from . import version",
     ],
 )
-def test_AzImport_str(pystr):
+@pytest.mark.parametrize("ignore_case", [True, False])
+def test_AzImport_str(pystr, ignore_case):
     node = parse(pystr)
 
-    az = AzImport([], node.body[0])
+    az = AzImport([], ignore_case, node.body[0])
 
     assert str(az) == pystr
 
@@ -173,11 +176,12 @@ def test_AzImport_str(pystr):
         "('ScramClient', 'ScramServer')",
     ],
 )
-def test_find_dunder_all_ok(pystr):
+@pytest.mark.parametrize("ignore_case", [True, False])
+def test_find_dunder_all_ok(pystr, ignore_case):
     node = parse(pystr)
     sequence_node = node.body[-1].value
 
-    assert _find_dunder_all_error(sequence_node) is None
+    assert _find_dunder_all_error(ignore_case, sequence_node) is None
 
 
 @pytest.mark.parametrize(
@@ -195,7 +199,8 @@ def test_find_dunder_all_ok(pystr):
         ],
     ],
 )
-def test_find_dunder_all_error(pystr, error, py_version):
+@pytest.mark.parametrize("ignore_case", [True, False])
+def test_find_dunder_all_error(pystr, error, py_version, ignore_case):
     node = parse(pystr)
     sequence_node = node.body[-1].value
     if isinstance(sequence_node, Tuple):
@@ -204,7 +209,7 @@ def test_find_dunder_all_error(pystr, error, py_version):
         col_offset = 0
     expected = (1, col_offset, error, Alphabetize)
 
-    assert _find_dunder_all_error(sequence_node) == expected
+    assert _find_dunder_all_error(ignore_case, sequence_node) == expected
 
 
 @pytest.mark.parametrize(
@@ -316,9 +321,10 @@ import datetime, scramp""",
         ],
     ],
 )
-def test_find_errors(app_names, pystr, errors):
+@pytest.mark.parametrize("ignore_case", [True, False])
+def test_find_errors(app_names, pystr, errors, ignore_case):
     tree = parse(pystr)
 
-    actual_errors = _find_errors(app_names, tree)
+    actual_errors = _find_errors(app_names, ignore_case, tree)
 
     assert actual_errors == errors

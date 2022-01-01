@@ -17,7 +17,7 @@ class Alphabetize:
         self.tree = tree
 
     def __iter__(self):
-        errors = _find_errors(Alphabetize.app_names, self.tree, Alphabetize.ignore_case)
+        errors = _find_errors(Alphabetize.app_names, Alphabetize.ignore_case, self.tree)
         return iter(errors)
 
     @staticmethod
@@ -73,7 +73,7 @@ def _is_in_stdlib(name):
 
 @total_ordering
 class AzImport:
-    def __init__(self, app_names, ast_node, ignore_case=False):
+    def __init__(self, app_names, ignore_case, ast_node):
         self.node = ast_node
         self.error = None
         level = None
@@ -181,7 +181,7 @@ def _find_nodes(tree):
     return import_nodes, list_node
 
 
-def _find_dunder_all_error(node, ignore_case=False):
+def _find_dunder_all_error(ignore_case, node):
     if node is not None:
         actual_list = []
         for el in node.elts:
@@ -206,11 +206,11 @@ def _find_dunder_all_error(node, ignore_case=False):
             )
 
 
-def _find_errors(app_names, tree, ignore_case=False):
+def _find_errors(app_names, ignore_case, tree):
     import_nodes, list_node = _find_nodes(tree)
     errors = []
 
-    dunder_all_error = _find_dunder_all_error(list_node, ignore_case)
+    dunder_all_error = _find_dunder_all_error(ignore_case, list_node)
     if dunder_all_error is not None:
         errors.append(dunder_all_error)
 
@@ -219,7 +219,7 @@ def _find_errors(app_names, tree, ignore_case=False):
         if isinstance(imp, Import) and len(imp.names) > 1:
             return errors
         else:
-            imports.append(AzImport(app_names, imp, ignore_case))
+            imports.append(AzImport(app_names, ignore_case, imp))
 
     len_imports = len(imports)
     if len_imports == 0:
