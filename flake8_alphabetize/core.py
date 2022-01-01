@@ -33,9 +33,9 @@ class Alphabetize:
             "Eg. 'myapp'.",
         )
         option_manager.add_option(
-            "--ignore-case",
+            "--alphabetize-ignore-case",
             type=bool,
-            metavar="IGNORE_CASE",
+            metavar="ALPHABETIZE_IGNORE_CASE",
             default=False,
             parse_from_config=True,
             help="Ignore case while sorting imports.",
@@ -45,7 +45,7 @@ class Alphabetize:
     def parse_options(cls, options):
         names = options.application_names
         cls.app_names = [] if (names is None or names == "") else names.split(",")
-        cls.ignore_case = options.ignore_case
+        cls.ignore_case = options.alphabetize_ignore_case
 
 
 def _make_error(node, code, message):
