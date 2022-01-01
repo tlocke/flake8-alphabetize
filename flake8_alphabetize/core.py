@@ -17,7 +17,7 @@ class Alphabetize:
         self.tree = tree
 
     def __iter__(self):
-        errors = _find_errors(Alphabetize.app_names, self.tree)
+        errors = _find_errors(Alphabetize.app_names, self.tree, Alphabetize.ignore_case)
         return iter(errors)
 
     @staticmethod
@@ -32,11 +32,20 @@ class Alphabetize:
             "package in this list, it'll be in the application group of imports. "
             "Eg. 'myapp'.",
         )
+        option_manager.add_option(
+            "--ignore-case",
+            type=bool,
+            metavar="IGNORE_CASE",
+            default=False,
+            parse_from_config=True,
+            help="Ignore case while sorting imports.",
+        )
 
     @classmethod
     def parse_options(cls, options):
         names = options.application_names
         cls.app_names = [] if (names is None or names == "") else names.split(",")
+        cls.ignore_case = options.ignore_case
 
 
 def _make_error(node, code, message):
@@ -64,7 +73,7 @@ def _is_in_stdlib(name):
 
 @total_ordering
 class AzImport:
-    def __init__(self, app_names, ast_node):
+    def __init__(self, app_names, ast_node, ignore_case=False):
         self.node = ast_node
         self.error = None
         level = None
@@ -84,7 +93,10 @@ class AzImport:
 
             ast_names = ast_node.names
             names = [n.name for n in ast_names]
-            expected_names = sorted(names)
+            if ignore_case:
+                expected_names = sorted(names, key=lambda x: x.lower())
+            else:
+                expected_names = sorted(names)
             if names != expected_names:
                 self.error = _make_error(
                     self.node,
@@ -169,7 +181,7 @@ def _find_nodes(tree):
     return import_nodes, list_node
 
 
-def _find_dunder_all_error(node):
+def _find_dunder_all_error(node, ignore_case=False):
     if node is not None:
         actual_list = []
         for el in node.elts:
@@ -181,7 +193,10 @@ def _find_dunder_all_error(node):
                 # Can't handle anything that isn't a string literal
                 return
 
-        expected_list = sorted(actual_list)
+        if ignore_case:
+            expected_list = sorted(actual_list, key=lambda x: x.lower())
+        else:
+            expected_list = sorted(actual_list)
         if expected_list != actual_list:
             return _make_error(
                 node,
@@ -191,11 +206,11 @@ def _find_dunder_all_error(node):
             )
 
 
-def _find_errors(app_names, tree):
+def _find_errors(app_names, tree, ignore_case=False):
     import_nodes, list_node = _find_nodes(tree)
     errors = []
 
-    dunder_all_error = _find_dunder_all_error(list_node)
+    dunder_all_error = _find_dunder_all_error(list_node, ignore_case)
     if dunder_all_error is not None:
         errors.append(dunder_all_error)
 
@@ -204,7 +219,7 @@ def _find_errors(app_names, tree):
         if isinstance(imp, Import) and len(imp.names) > 1:
             return errors
         else:
-            imports.append(AzImport(app_names, imp))
+            imports.append(AzImport(app_names, imp, ignore_case))
 
     len_imports = len(imports)
     if len_imports == 0:
