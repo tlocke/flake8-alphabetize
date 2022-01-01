@@ -328,3 +328,44 @@ def test_find_errors(app_names, pystr, errors, ignore_case):
     actual_errors = _find_errors(app_names, ignore_case, tree)
 
     assert actual_errors == errors
+
+
+@pytest.mark.parametrize(
+    "app_names,pystr,errors,ignore_case",
+    [
+        [
+            [],
+            "from datetime import date, MINYEAR, timedelta",
+            [
+                (
+                    1,
+                    0,
+                    "AZ200 Imported names are in the wrong order. Should be MINYEAR, "
+                    "date, timedelta",
+                    Alphabetize,
+                )
+            ],
+            False,
+        ],
+        [
+            [],
+            "from datetime import MINYEAR, date, timedelta",
+            [
+                (
+                    1,
+                    0,
+                    "AZ200 Imported names are in the wrong order. Should be date, "
+                    "MINYEAR, timedelta",
+                    Alphabetize,
+                )
+            ],
+            True,
+        ],
+    ],
+)
+def test_find_errors_case_sensitive(app_names, pystr, errors, ignore_case):
+    tree = parse(pystr)
+
+    actual_errors = _find_errors(app_names, ignore_case, tree)
+
+    assert actual_errors == errors
