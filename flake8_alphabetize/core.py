@@ -34,9 +34,7 @@ class Alphabetize:
         )
         option_manager.add_option(
             "--alphabetize-ignore-case",
-            type=bool,
-            metavar="ALPHABETIZE_IGNORE_CASE",
-            default=False,
+            action="store_true",
             parse_from_config=True,
             help="Ignore case while sorting imports.",
         )
