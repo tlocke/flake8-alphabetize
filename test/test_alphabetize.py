@@ -1,5 +1,7 @@
 from ast import List, Tuple, parse
 
+import pytest
+
 from flake8_alphabetize import Alphabetize
 from flake8_alphabetize.core import (
     AzImport,
@@ -7,8 +9,6 @@ from flake8_alphabetize.core import (
     _find_errors,
     _find_nodes,
 )
-
-import pytest
 
 
 @pytest.mark.parametrize(

@@ -1,0 +1,29 @@
+[build-system]
+requires = [
+    "setuptools>=42",
+    "versioningit >= 1.1.1",
+]
+build-backend = "setuptools.build_meta"
+
+[tool.versioningit]
+
+[tool.versioningit.vcs]
+method = "git"
+default-tag = "0.0.0"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist = py
+[testenv]
+deps =
+  flake8
+  black
+  pytest
+  pytest-mock
+commands =
+  black --check .
+  flake8 .
+  python -m pytest -x -v -W error test
+"""

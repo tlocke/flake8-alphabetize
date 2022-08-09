@@ -3,7 +3,13 @@ from ast import Assign, Constant, Import, ImportFrom, List, Module, Name, Str, T
 from enum import IntEnum
 from functools import total_ordering
 
-from stdlib_list import in_stdlib
+
+try:
+    from importlib.metadata import version
+except ImportError:
+    from importlib_metadata import version
+
+ver = version("flake8-alphabetize")
 
 
 class AlphabetizeException(Exception):
@@ -59,6 +65,8 @@ def _is_in_stdlib(name):
     if hasattr(sys, "stdlib_module_names"):
         return name in sys.stdlib_module_names
     else:
+        from stdlib_list import in_stdlib
+
         return in_stdlib(name)
 
 

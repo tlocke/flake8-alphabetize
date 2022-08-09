@@ -1,10 +1,6 @@
-from flake8_alphabetize.core import Alphabetize
+from flake8_alphabetize.core import Alphabetize, ver
 
-from ._version import get_versions
-
-__version__ = get_versions()["version"]
-del get_versions
-
+__version__ = ver
 Alphabetize.version = __version__
 
 __all__ = ["Alphabetize", "__version__"]
