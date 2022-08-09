@@ -11,8 +11,8 @@ the spirit of Black, Alphabetize is an 'uncompromising import style checker' in 
 the style can't be configured, there's just one style (see below for the rules).
 
 
-Alphabetise is released under the https://unlicense.org[Unlicense]. It is tested on
-Python 3.6+.
+Alphabetise is released under the https://choosealicense.com/licenses/mit-0/[MIT-0
+licence]. It is tested on Python 3.6+.
 
 image::https://github.com/tlocke/flake8-alphabetize/actions/workflows/test.yaml/badge.svg[Build Status]
 
