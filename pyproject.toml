@@ -1,9 +1,43 @@
 [build-system]
 requires = [
-    "setuptools>=42",
-    "versioningit >= 1.1.1",
+    "setuptools>=61",
+    "versioningit >= 2.0.1",
 ]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "flake8-alphabetize"
+description = "A Python style checker for alphabetizing import and __all__."
+readme = "README.rst"
+requires-python = ">=3.7"
+keywords = ["flake8"]
+license = {text = "MIT No Attribution"}
+classifiers = [
+    "Framework :: Flake8",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT No Attribution License (MIT-0)",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = [
+    "flake8 > 3.0.0",
+    'stdlib_list == 0.8.0 ; python_version < "3.10"',
+    'importlib-metadata >= 1.0 ; python_version < "3.8"',
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/tlocke/flake8-alphabetize"
+
+[project.entry-points."flake8.extension"]
+AZ = "flake8_alphabetize:Alphabetize"
 
 [tool.versioningit]
 
@@ -19,6 +53,7 @@ envlist = py
 [testenv]
 deps =
   flake8
+  flake8-alphabetize
   black
   pytest
   pytest-mock
