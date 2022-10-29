@@ -135,11 +135,17 @@ Run ``tox`` to make sure all tests pass, then update the release notes, then do:
 Release Notes
 -------------
 
+Version 0.0.18, 2022-10-29
+``````````````````````````
+
+- Fix bug where sub-packages (eg. ``collections.abc``) aren't recognised as being part
+  of the standard library for versions of Python >= 3.10.
+
 
 Version 0.0.17, 2021-11-17
 ``````````````````````````
 
-* Handle the case of an ``__all__`` being a ``tuple``.
+- Handle the case of an ``__all__`` being a ``tuple``.
 
 
 Version 0.0.16, 2021-07-26
