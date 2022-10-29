@@ -8,7 +8,12 @@ from flake8_alphabetize.core import (
     _find_dunder_all_error,
     _find_errors,
     _find_nodes,
+    _is_in_stdlib,
 )
+
+
+def test_is_in_stdlib():
+    assert _is_in_stdlib("collections.abc")
 
 
 @pytest.mark.parametrize(
@@ -133,6 +138,12 @@ def test_AzImport_init(pystr, error):
             [],
             "from . import scramp",
             "from .version import ver",
+            True,
+        ],
+        [  # Test with a sub-package
+            [],
+            "from collections.abc import Map",
+            "from decimal import Decimal",
             True,
         ],
     ],

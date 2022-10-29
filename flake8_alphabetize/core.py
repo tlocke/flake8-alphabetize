@@ -63,7 +63,8 @@ class NodeTypeEnum(IntEnum):
 
 def _is_in_stdlib(name):
     if hasattr(sys, "stdlib_module_names"):
-        return name in sys.stdlib_module_names
+        main_package = name.split(".")[0]
+        return main_package in sys.stdlib_module_names
     else:
         from stdlib_list import in_stdlib
 
