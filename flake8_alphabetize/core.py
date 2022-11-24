@@ -30,13 +30,11 @@ class Alphabetize:
     def add_options(option_manager):
         option_manager.add_option(
             "--application-names",
-            type="string",
             metavar="APPLICATION_NAMES",
             default="",
             parse_from_config=True,
-            help="Comma-separated list of package names. If an import is for a "
-            "package in this list, it'll be in the application group of imports. "
-            "Eg. 'myapp'.",
+            help="Comma-separated list of package names. If an import is for a package "
+            "in this list, it'll be in the application group of imports. Eg. 'myapp'.",
         )
 
     @classmethod

@@ -135,6 +135,12 @@ Run ``tox`` to make sure all tests pass, then update the release notes, then do:
 Release Notes
 -------------
 
+Version 0.0.19, 2022-11-24
+``````````````````````````
+
+- Make Alphabetize compatible with Flake8 6.0.0
+
+
 Version 0.0.18, 2022-10-29
 ``````````````````````````
 
