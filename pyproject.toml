@@ -45,6 +45,13 @@ AZ = "flake8_alphabetize:Alphabetize"
 method = "git"
 default-tag = "0.0.0"
 
+[tool.flake8]
+ignore = ['E203', 'W503']
+max-line-length = 88
+exclude = ['.git', '__pycache__', 'build', 'dist', 'venv', '.tox', 'test/cmd']
+application-names = ['flake8_alphabetize']
+
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
@@ -54,6 +61,7 @@ envlist = py
 deps =
   flake8
   flake8-alphabetize
+  Flake8-pyproject
   black
   pytest
   pytest-mock
