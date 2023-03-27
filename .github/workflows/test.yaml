@@ -1,5 +1,7 @@
 name: Flake8 Alphabetize
 
+permissions: read-all
+
 on: [push]
 
 jobs:
