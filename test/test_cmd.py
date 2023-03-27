@@ -20,10 +20,7 @@ def test_cmd_success(py_version, case, app_names):
     args.append(f"test/cmd/case_{case}.py")
 
     try:
-        if py_version == (3, 6):
-            run(args, check=True)
-        else:
-            run(args, capture_output=True, check=True)
+        run(args, capture_output=True, check=True)
     except CalledProcessError as e:
         print(os.getcwd())
         print(e.returncode, e.cmd, e.output, e.stdout)

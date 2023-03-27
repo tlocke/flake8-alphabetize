@@ -33,14 +33,14 @@ class Alphabetize:
             metavar="APPLICATION_NAMES",
             default="",
             parse_from_config=True,
+            comma_separated_list=True,
             help="Comma-separated list of package names. If an import is for a package "
             "in this list, it'll be in the application group of imports. Eg. 'myapp'.",
         )
 
     @classmethod
     def parse_options(cls, options):
-        names = options.application_names
-        cls.app_names = [] if (names is None or names == "") else names.split(",")
+        cls.app_names = options.application_names
 
 
 def _make_error(node, code, message):
@@ -159,14 +159,11 @@ def _find_nodes(tree):
         body = tree.body
 
         for n in body:
-
             if isinstance(n, IMPORT_TYPES):
                 import_nodes.append(n)
 
             elif isinstance(n, Assign):
-
                 for t in n.targets:
-
                     if isinstance(t, Name) and t.id == "__all__":
                         value = n.value
 
@@ -225,7 +222,6 @@ def _find_errors(app_names, tree):
         return errors
 
     for n in imports[1:]:
-
         if n.error is not None:
             errors.append(n.error)
 
