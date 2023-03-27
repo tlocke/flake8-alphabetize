@@ -121,6 +121,24 @@ Here are the ordering rules that Alphabetize follows:
    are ignored.
 
 
+Running Tests
+-------------
+
+Run `tox <https://tox.wiki/en/latest/>`_ to run the tests.
+
+* Install tox: ``pip install tox``
+* Run tox: ``tox``
+
+
+OpenSSF Scorecard
+-----------------
+
+It might be worth running the `OpenSSF Scorecard <https://securityscorecards.dev/>`_::
+
+  sudo docker run -e GITHUB_AUTH_TOKEN=<auth_token> gcr.io/openssf/scorecard:stable \
+  --repo=github.com/tlocke/flake8-alphabetize
+
+
 Doing A Release Of Alphabetize
 ------------------------------
 
