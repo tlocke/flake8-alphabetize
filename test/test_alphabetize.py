@@ -6,6 +6,8 @@ from flake8_alphabetize import Alphabetize
 from flake8_alphabetize.core import (
     AzImport,
     _find_dunder_all_error,
+    _find_elist_errors,
+    _find_elist_nodes,
     _find_errors,
     _find_nodes,
     _is_in_stdlib,
@@ -17,7 +19,25 @@ def test_is_in_stdlib():
 
 
 @pytest.mark.parametrize(
-    "pystr,import_node_types,expected_type",
+    "pystr,elist_node_types",
+    [
+        [
+            """try:
+    pass
+except [Exception, BaseException]:
+    pass""",
+            [List],
+        ],
+    ],
+)
+def test_find_elist_nodes(pystr, elist_node_types):
+    elist_nodes = _find_elist_nodes(parse(pystr))
+
+    assert [type(n) for n in elist_nodes] == elist_node_types
+
+
+@pytest.mark.parametrize(
+    "pystr,import_node_types,alist_type,elist_node_types",
     [
         [
             """
@@ -26,28 +46,42 @@ if True:
 """,
             [],
             None,
+            [],
         ],
         [
             "__all__ = []",
             [],
             List,
+            [],
         ],
         [
             "__all__ = ()",
             [],
             Tuple,
+            [],
+        ],
+        [
+            """try:
+    pass
+except [Exception, BaseException]:
+    pass""",
+            [],
+            None,
+            [List],
         ],
     ],
 )
-def test_find_nodes(pystr, import_node_types, expected_type):
-    import_nodes, list_node = _find_nodes(parse(pystr))
+def test_find_nodes(pystr, import_node_types, alist_type, elist_node_types):
+    import_nodes, alist_node, elist_nodes = _find_nodes(parse(pystr))
 
     assert [type(n) for n in import_nodes] == import_node_types
 
-    if expected_type is None:
-        assert list_node is None
+    if alist_type is None:
+        assert alist_node is None
     else:
-        assert type(list_node) == expected_type
+        assert type(alist_node) == alist_type
+
+    assert [type(n) for n in elist_nodes] == elist_node_types
 
 
 @pytest.mark.parametrize(
@@ -171,6 +205,38 @@ def test_AzImport_str(pystr):
     az = AzImport([], node.body[0])
 
     assert str(az) == pystr
+
+
+@pytest.mark.parametrize(
+    "pystrs,errors",
+    [
+        [
+            ["[Exception, BaseException]"],
+            [
+                (
+                    1,
+                    0,
+                    "AZ500 The names in the exception handler list are in the wrong "
+                    "order. The order should be BaseException, Exception",
+                    Alphabetize,
+                )
+            ],
+        ],
+    ],
+)
+def test_elist_errors(pystrs, errors, py_version):
+    nodes = [parse(pystr).body[-1].value for pystr in pystrs]
+
+    expected = []
+
+    for (line_offset, col_offset, msg, cls), node in zip(errors, nodes):
+        if py_version < (3, 8) and isinstance(node, Tuple):
+            col_offset = 1
+
+        expected.append((line_offset, col_offset, msg, cls))
+
+    actual = _find_elist_errors(nodes)
+    assert actual == expected
 
 
 @pytest.mark.parametrize(
@@ -324,6 +390,22 @@ __all__ = [ScramServer, ScramClient]
             """import time
 import datetime, scramp""",
             [],
+        ],
+        [
+            [],
+            """try:
+    pass
+except [Exception, BaseException]:
+    pass""",
+            [
+                (
+                    3,
+                    7,
+                    "AZ500 The names in the exception handler list are in the wrong "
+                    "order. The order should be BaseException, Exception",
+                    Alphabetize,
+                ),
+            ],
         ],
     ],
 )

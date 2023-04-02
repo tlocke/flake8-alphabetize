@@ -1,5 +1,17 @@
 import sys
-from ast import Assign, Constant, Import, ImportFrom, List, Module, Name, Str, Tuple
+from ast import (
+    Assign,
+    Constant,
+    ExceptHandler,
+    Import,
+    ImportFrom,
+    List,
+    Module,
+    Name,
+    Str,
+    Tuple,
+    walk,
+)
 from enum import IntEnum
 from functools import total_ordering
 
@@ -151,9 +163,22 @@ class AzImport:
 IMPORT_TYPES = Import, ImportFrom
 
 
+def _find_elist_nodes(tree):
+    nodes = []
+
+    for node in walk(tree):
+        if isinstance(node, ExceptHandler):
+            node_type = node.type
+            if isinstance(node_type, (List, Tuple)):
+                nodes.append(node_type)
+
+    return nodes
+
+
 def _find_nodes(tree):
     import_nodes = []
-    list_node = None
+    alist_node = None
+    elist_nodes = _find_elist_nodes(tree)
 
     if isinstance(tree, Module):
         body = tree.body
@@ -168,9 +193,9 @@ def _find_nodes(tree):
                         value = n.value
 
                         if isinstance(value, (List, Tuple)):
-                            list_node = value
+                            alist_node = value
 
-    return import_nodes, list_node
+    return import_nodes, alist_node, elist_nodes
 
 
 def _find_dunder_all_error(node):
@@ -195,13 +220,34 @@ def _find_dunder_all_error(node):
             )
 
 
-def _find_errors(app_names, tree):
-    import_nodes, list_node = _find_nodes(tree)
+def _find_elist_errors(nodes):
     errors = []
 
-    dunder_all_error = _find_dunder_all_error(list_node)
+    for node in nodes:
+        actual_list = [name.id for name in node.elts]
+
+        expected_list = sorted(actual_list)
+        if expected_list != actual_list:
+            errors.append(
+                _make_error(
+                    node,
+                    "500",
+                    f"The names in the exception handler list are in the wrong order. "
+                    f"The order should be {', '.join(expected_list)}",
+                )
+            )
+    return errors
+
+
+def _find_errors(app_names, tree):
+    import_nodes, alist_node, elist_nodes = _find_nodes(tree)
+    errors = []
+
+    dunder_all_error = _find_dunder_all_error(alist_node)
     if dunder_all_error is not None:
         errors.append(dunder_all_error)
+
+    errors.extend(_find_elist_errors(elist_nodes))
 
     imports = []
     for imp in import_nodes:
@@ -230,8 +276,8 @@ def _find_errors(app_names, tree):
                 _make_error(
                     n.node,
                     "300",
-                    f"Import statements should be combined. '{p}' should be "
-                    f"combined with '{n}'",
+                    f"Import statements should be combined. '{p}' should be combined "
+                    f"with '{n}'",
                 )
             )
         elif n < p:

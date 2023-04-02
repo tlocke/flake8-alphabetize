@@ -82,6 +82,8 @@ codes:
    +-------+----------------------------------------------------------------+
    | AZ400 | The names in the ``__all__`` are in the wrong order            |
    +-------+----------------------------------------------------------------+
+   | AZ500 | The names in the exception handler list are in the wrong order |
+   +-------+----------------------------------------------------------------+
 
 Alphabetize follows the Black formatter's uncompromising approach and so there's only
 one configuration option which is ``application-names``. This is a comma-separated list
