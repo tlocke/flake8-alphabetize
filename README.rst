@@ -3,9 +3,10 @@ Flake8 Alphabetize
 ==================
 
 Alphabetize is a `Flake8 <https://flake8.pycqa.org/en/latest/>`_ plugin for checking the
-order of ``import`` statements and the ``__all__`` list. It is designed to work well
-with the `Black <https://black.readthedocs.io/en/stable/index.html>`_ formatting tool,
-in that Black never alters the
+order of ``import`` statements, the ``__all__`` list and ``except`` lists. It is
+designed to work well with the
+`Black <https://black.readthedocs.io/en/stable/index.html>`_ formatting tool, in that
+Black never alters the
 `Abstract Syntax Tree <https://en.wikipedia.org/wiki/Abstract_syntax_tree>`_ (AST),
 while Alphabetize is *only* interested in the AST, and so the two tools never conflict.
 In the spirit of Black, Alphabetize is an 'uncompromising import style checker' in that
@@ -154,6 +155,12 @@ Run ``tox`` to make sure all tests pass, then update the release notes, then do:
 
 Release Notes
 -------------
+
+Version 0.0.20, 2023-04-02
+``````````````````````````
+
+- Check the ordering of ``except`` handler lists.
+
 
 Version 0.0.19, 2022-11-24
 ``````````````````````````
