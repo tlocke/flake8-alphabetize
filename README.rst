@@ -156,6 +156,12 @@ Run ``tox`` to make sure all tests pass, then update the release notes, then do:
 Release Notes
 -------------
 
+Version 0.0.21, 2023-04-13
+``````````````````````````
+
+- Fixed a bug where it crashes on qualified names in an exception list.
+
+
 Version 0.0.20, 2023-04-02
 ``````````````````````````
 
