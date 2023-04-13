@@ -8,6 +8,7 @@ from flake8_alphabetize.core import (
     _find_dunder_all_error,
     _find_elist_errors,
     _find_elist_nodes,
+    _find_elist_str,
     _find_errors,
     _find_nodes,
     _is_in_stdlib,
@@ -208,6 +209,19 @@ def test_AzImport_str(pystr):
 
 
 @pytest.mark.parametrize(
+    "pystr",
+    [
+        "Exception",
+        "scramp.Exception",
+        "sqlalchemy.exceptions.BaseException",
+    ],
+)
+def test_find_elist_str(pystr):
+    node = parse(pystr)
+    assert _find_elist_str(node.body[0].value) == pystr
+
+
+@pytest.mark.parametrize(
     "pystrs,errors",
     [
         [
@@ -218,6 +232,19 @@ def test_AzImport_str(pystr):
                     0,
                     "AZ500 The names in the exception handler list are in the wrong "
                     "order. The order should be BaseException, Exception",
+                    Alphabetize,
+                )
+            ],
+        ],
+        [
+            ["[scramp.Exception, sqlalchemy.exceptions.BaseException, Exception]"],
+            [
+                (
+                    1,
+                    0,
+                    "AZ500 The names in the exception handler list are in the wrong "
+                    "order. The order should be Exception, scramp.Exception, "
+                    "sqlalchemy.exceptions.BaseException",
                     Alphabetize,
                 )
             ],

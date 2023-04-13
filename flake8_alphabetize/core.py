@@ -1,6 +1,7 @@
 import sys
 from ast import (
     Assign,
+    Attribute,
     Constant,
     ExceptHandler,
     Import,
@@ -220,11 +221,18 @@ def _find_dunder_all_error(node):
             )
 
 
+def _find_elist_str(node):
+    if isinstance(node, Name):
+        return node.id
+    elif isinstance(node, Attribute):
+        return f"{_find_elist_str(node.value)}.{node.attr}"
+
+
 def _find_elist_errors(nodes):
     errors = []
 
     for node in nodes:
-        actual_list = [name.id for name in node.elts]
+        actual_list = [_find_elist_str(elt) for elt in node.elts]
 
         expected_list = sorted(actual_list)
         if expected_list != actual_list:
