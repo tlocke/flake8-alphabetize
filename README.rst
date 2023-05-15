@@ -93,6 +93,23 @@ Since Alphabetize is a Flake8 plugin, this configuration option is set using
 `Flake8 configuration <https://flake8.pycqa.org/en/latest/user/configuration.html>`_.
 
 
+Pre-Commit Configuration
+------------------------
+
+Alphabetize can be easily configured to run in your existing `pre-commit <https://pre-commit.com>`_
+hooks, as an additional dependency of Flake8:
+
+.. code:: YAML
+
+   repos:
+      - repo: https://github.com/pycqa/flake8
+        rev: 6.0.0
+        hooks:
+         - id: flake8
+           additional_dependencies: ['flake8-alphabetize']
+      
+      
+
 Rules Of Import Ordering
 ------------------------
 
